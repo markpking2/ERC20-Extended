@@ -84,4 +84,14 @@ contract MarkToken is ERC20 {
         }
         
     }
+
+    // withdraw functions
+    function balance() external view onlyOwner returns (uint){
+        return address(this).balance;
+    }
+
+    function withdraw(uint _amount) external onlyOwner {
+        require(address(this).balance >= _amount, "insufficient balance");
+        payable(_owner).transfer(_amount);
+    }
 }
