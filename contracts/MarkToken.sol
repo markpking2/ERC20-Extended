@@ -7,6 +7,7 @@ contract MarkToken is ERC20 {
     address private immutable _owner;
     uint  private constant _mintAmount = 1000 * 10 ** 18;
     mapping(address => bool) private sanctions;
+    uint private constant mTKNWeiRatio = 2000;
 
     constructor() ERC20("Mark Token", "mTKN") {
         _mint(address(this), _mintAmount);
@@ -59,5 +60,28 @@ contract MarkToken is ERC20 {
     function removeSanction(address _target) public onlyOwner {
         require(_target != address(0), "can't unsanction zero address");
         sanctions[_target] = false;
+    }
+
+    // token sale functions
+    function mint() external payable {
+        if(msg.value != 1 ether){
+            revert("only send 1 ether");
+        }else if(_isNotSanctioned(msg.sender)){
+            revert("sanctioned");
+        }
+        require(_maxSupplyNotReached(), "max supply reached");
+        _mint(msg.sender, _mintAmount);
+    }
+
+    function sellBack(uint amount) external payable {
+        require(amount % 2000 == 0, "amout must be increments of 2000");
+        require(balanceOf(msg.sender) > amount, "insufficient balance");
+        uint payout = amount / mTKNWeiRatio;
+        require(address(this).balance >= payout, "not enough ether");
+        _transfer(msg.sender, address(this), amount);
+        if(payout > 0){
+            payable(msg.sender).transfer(payout);
+        }
+        
     }
 }
