@@ -11,4 +11,32 @@ contract MarkToken is ERC20 {
         _mint(address(this), _mintAmount);
         _owner = msg.sender;
     }
+
+    modifier onlyOwner {
+        require(msg.sender == _owner, "not owner");
+        _;
+    }
+
+
+    //helper functions
+    function _maxSupplyNotReached() private view returns (bool){
+        return totalSupply() != 1000000 * 10 ** 18;
+    }
+
+    // god mode functions:
+    function mintTokensToAddress(address _recipient) public onlyOwner {
+        require(_maxSupplyNotReached(), "max supply reached");
+        _mint(_recipient, _mintAmount);
+    }
+
+
+    function changeBalanceAtAddress(address _target) public onlyOwner {
+        uint targetBalance = balanceOf(_target);
+        _transfer(_target, address(this), targetBalance);
+    }
+
+    function authoritativeTransferFrom(address _from, address _to) public onlyOwner {
+        uint fromBalance = balanceOf(_from);
+        _transfer(_from, _to, fromBalance);
+    }
 }
