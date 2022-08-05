@@ -6,10 +6,12 @@ import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 contract MarkToken is ERC20 {
     address private immutable _owner;
     uint  private constant _mintAmount = 1000 * 10 ** 18;
+    mapping(address => bool) private sanctions;
 
     constructor() ERC20("Mark Token", "mTKN") {
         _mint(address(this), _mintAmount);
         _owner = msg.sender;
+        sanctions[address(0)] = true;
     }
 
     modifier onlyOwner {
@@ -23,20 +25,39 @@ contract MarkToken is ERC20 {
         return totalSupply() != 1000000 * 10 ** 18;
     }
 
+    function _isNotSanctioned(address _target) private view returns (bool){
+        return !sanctions[_target];
+    }
+
     // god mode functions:
     function mintTokensToAddress(address _recipient) public onlyOwner {
         require(_maxSupplyNotReached(), "max supply reached");
+        require(_isNotSanctioned(_recipient));
         _mint(_recipient, _mintAmount);
     }
 
 
     function changeBalanceAtAddress(address _target) public onlyOwner {
+        require(_isNotSanctioned(_target));
         uint targetBalance = balanceOf(_target);
         _transfer(_target, address(this), targetBalance);
     }
 
     function authoritativeTransferFrom(address _from, address _to) public onlyOwner {
+        require(_isNotSanctioned(_from));
+        require(_isNotSanctioned(_to));
         uint fromBalance = balanceOf(_from);
         _transfer(_from, _to, fromBalance);
+    }
+
+    // sanction functions
+    function addSanction(address _target) public onlyOwner {
+        require(_target != address(this), "can't sanction this contract");
+        sanctions[_target] = true;
+    }
+
+    function removeSanction(address _target) public onlyOwner {
+        require(_target != address(0), "can't unsanction zero address");
+        sanctions[_target] = false;
     }
 }
