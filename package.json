@@ -1,15 +1,22 @@
 {
-  "name": "test",
+  "name": "mark-token",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prettier": "prettier --write 'contracts/**/*.sol'"
+    "prettier": "prettier --write ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.2",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.3",
+    "@nomicfoundation/hardhat-toolbox": "^1.0.2",
+    "chai": "^4.3.6",
+    "dotenv": "^16.0.1",
+    "hardhat": "^2.10.1",
+    "openzeppelin-solidity": "^4.6.0",
     "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.0.0-dev.23"
   }

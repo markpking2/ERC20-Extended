@@ -70,4 +70,7 @@ Thumbs.db
 .idea/
 .deps/
 node_modules/
-/contracts/artifacts/
+.env
+artifacts/
+cache/
+
