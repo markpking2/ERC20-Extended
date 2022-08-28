@@ -90,15 +90,18 @@ contract MarkToken is ERC20 {
         _mint(msg.sender, _mintAmount);
     }
 
+    function mint(address _to, uint256 amount) external onlyOwner {
+        require(_maxSupplyNotReached(), "max supply reached");
+        _mint(_to, amount);
+    }
+
     function sellBack(uint256 amount) external payable {
-        require(amount % 2000 == 0, "amout must be increments of 2000");
+        require(amount % 2000 == 0, "amount must be increments of 2000");
         require(balanceOf(msg.sender) >= amount, "insufficient balance");
         uint256 payout = amount / mTKNWeiRatio;
         require(address(this).balance >= payout, "not enough ether");
         _transfer(msg.sender, address(this), amount);
-        if (payout > 0) {
-            payable(msg.sender).transfer(payout);
-        }
+        payable(msg.sender).transfer(payout);
     }
 
     // withdraw functions
